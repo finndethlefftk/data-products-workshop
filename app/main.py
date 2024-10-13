@@ -21,7 +21,7 @@ class Interface:
 
 class FileHandler:
     """Class to handle the file"""
-    
+
     def __init__(self):
         pass
 
@@ -42,7 +42,7 @@ class FileHandler:
 
 class MessageHandler:
     """Class to create the messages to send to the OpenAI API"""
-    
+
     def __init__(self, encoded_image: str):
         self.base_prompt = DEFAULT_PROMPT
         self.encoded_image = encoded_image
@@ -78,9 +78,11 @@ class ResponseHandler:
 
 class App:
     """Class to handle the app"""
-
-    @staticmethod
-    def run():
+    
+    def __init__(self):
+        pass
+    
+    def run(self):
         """Run the app"""
         Interface.base_ui()
     
@@ -102,5 +104,6 @@ class App:
     
 
 if __name__ == "__main__":
-    App.run()
+    app = App()
+    app.run()
 
