@@ -1,10 +1,8 @@
-from fastapi import UploadFile
 import streamlit as st
-from openai import OpenAI
+from fastapi import UploadFile
 import base64
+from openai import OpenAI
 from constants import LLM_MODEL, DEFAULT_PROMPT
-
-
 
 
 class Interface:
@@ -45,37 +43,17 @@ class FileHandler:
 class MessageHandler:
     """Class to create the messages to send to the OpenAI API"""
     
-    def __init__(self, base_prompt: str, encoded_image: str, custom_prompt: str | None = None):
-        self.base_prompt = base_prompt
+    def __init__(self, encoded_image: str):
+        self.base_prompt = DEFAULT_PROMPT
         self.encoded_image = encoded_image
-        self.custom_prompt = custom_prompt
-    
+
     def get_messages(self) -> list[dict]:
-        """Create the messages to send to the OpenAI API"""
         role = "user"
-        messages = [
-            {
-                "role": role,
-                "content": [
-                    {"type": "text", "text": self.base_prompt},
-                    {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{self.encoded_image}"}}
-                ]
-            }
+        content = [
+            {"type": "text", "text": self.base_prompt},
+            {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{self.encoded_image}"}}
         ]
-        
-        if self.custom_prompt:
-            messages.append({
-                "role": role,
-                "content": [
-                    {"type": "text", "text": self.custom_prompt}
-                ]
-            })
-        
-        return messages
-    
-    def set_custom_prompt(self, custom_prompt: str):
-        """Set the custom prompt"""
-        self.custom_prompt = custom_prompt
+        return [{"role": role, "content": content}]
 
 
 class ResponseHandler:
@@ -110,30 +88,19 @@ class App:
         encoded_image = file_handler.get_encoded_image()
 
         if encoded_image:
-            message_handler = MessageHandler(base_prompt=DEFAULT_PROMPT, encoded_image=encoded_image)
+            message_handler = MessageHandler(encoded_image=encoded_image)
             messages = message_handler.get_messages()
-
+            response_handler = ResponseHandler(messages=messages)
 
         if st.button("Generate Tracking Events", type="primary"):
-            if encoded_image:
-                response_handler = ResponseHandler(messages=messages)
+            if not encoded_image:
+                st.warning("Please upload an image first")
+            else:
                 with st.spinner("Generating tracking events..."):
                     response = response_handler.get_response()
                     st.success(response)
-                    # copy to clipboard
-                    with st.expander("Copy to clipboard"):
-                        st.code(response, language="markdown")
-            else:
-                st.warning("Please upload an image first")
-
-        # TODO: Custom prompt
-
-
-def main():
-    """Main function to run the app"""
-    App.run()
     
 
 if __name__ == "__main__":
-    main()
+    App.run()
 
