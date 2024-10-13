@@ -7,8 +7,8 @@ You work for an online travel agency.
 We will provide you with an image of the design of a product.
 
 Your task is to generate a table with tracking events.
-Above the table:
-- add a simple description of the features of the product.
+Above the table add a simple description of the features of the product.
+Below the table add:
 - an exhaustive list of business questions that can be answered with the data in the table.
 - metrics that can be calculated with the data in the table.
 
